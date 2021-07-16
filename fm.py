@@ -46,8 +46,18 @@ x_test = x_test.reshape(-1, n_features).astype("float32") / 255
 y_train = y_train.astype("float32")
 y_test = y_test.astype("float32")
 
-fm = FMLayer(1, n_features)
-optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+# lr
+# inputs = keras.Input(shape=(n_features,), name="digits")
+# outputs = keras.layers.Dense(10, activation="softmax", name="predictions")(inputs)
+# model = keras.Model(inputs=inputs, outputs=outputs)
 
-fm.compile(optimizer, loss=tf.keras.losses.BinaryCrossentropy(), metrics=['acc'])
-fm.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+# fm
+inputs = keras.Input(shape=(n_features,), name="digits")
+x = FMLayer(10, n_features)(inputs)
+outputs = keras.layers.Dense(10, activation="softmax", name="predictions")(x)
+model = keras.Model(inputs=inputs, outputs=outputs)
+
+# 编译训练
+optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+model.compile(optimizer, loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['acc'])
+model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
