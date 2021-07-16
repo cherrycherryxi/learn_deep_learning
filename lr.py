@@ -6,6 +6,7 @@ import pandas as pd
 import kerastuner as kt
 from tensorflow import keras
 from keras import layers
+# from hyperopt import fmin, tpe, hp
 from sklearn import datasets
 from sklearn.utils import shuffle
 from func import *
@@ -23,6 +24,7 @@ from keras.datasets import imdb, mnist
 #     def query(self):
 #         pass
 
+# 数据输入
 
 batch_size = 128
 epochs = 40
@@ -138,6 +140,7 @@ def model_builder(hp):
 
     # Tune the number of units in the first Dense layer
     # Choose an optimal value between 32-512
+    # hp = kt.HyperParameters()
     hp_units = hp.Int('units', min_value=32, max_value=512, step=32)
     model.add(keras.layers.Dense(units=hp_units, activation='relu'))
     model.add(keras.layers.Dense(10))
