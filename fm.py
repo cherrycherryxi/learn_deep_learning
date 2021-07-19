@@ -7,7 +7,7 @@ from keras.datasets import imdb, mnist
 
 
 class FMLayer(keras.Model):
-    def __init__(self, units, input_dim, embedding_size=32):
+    def __init__(self, units, input_dim, embedding_size=8):
         super(FMLayer, self).__init__()
         w_init = tf.random_normal_initializer()
         self.w = tf.Variable(
@@ -27,11 +27,15 @@ class FMLayer(keras.Model):
         # self.v = keras.layers.Embedding(batch_size, embedding_size, embeddings_initializer='uniform', input_length=input_dim)
 
     def call(self, inputs):
+        # (1,)
         bias = self.b
+        # (None, 10)
         first_order = tf.matmul(inputs, self.w)
         # v = tf.squeeze(self.v, 0)
+        # (None, 8)
         part1 = tf.matmul(inputs, self.v)
         second_order_part1 = tf.reduce_sum(tf.multiply(part1, part1))
+        # (8, 784), (1024, 784)
         part2 = tf.multiply(tf.transpose(tf.square(self.v)), tf.square(inputs))
         second_order_part2 = tf.reduce_sum(part2)
         second_order = 0.5*tf.subtract(second_order_part1, second_order_part2)
@@ -60,4 +64,4 @@ model = keras.Model(inputs=inputs, outputs=outputs)
 # 编译训练
 optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 model.compile(optimizer, loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['acc'])
-model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+model.fit(x_train, y_train, epochs=15, batch_size=1024, validation_split=0.2)
